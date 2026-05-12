@@ -6,21 +6,21 @@ const API = "http://127.0.0.1:8000"
 
 export default function App() {
   const [userId] = useState("tushar")
-  const [text, setText] = useState("")
+  const [situation, setSituation] = useState("")
+  const [response, setResponse] = useState("")
   const [result, setResult] = useState(null)
   const [loading, setLoading] = useState(false)
   const [tab, setTab] = useState("analyze")
-  const [situation, setSituation] = useState("")
   const [questions, setQuestions] = useState([])
   const [answers, setAnswers] = useState(["", ""])
   const [coaching, setCoaching] = useState(null)
   const [socraticStep, setSocraticStep] = useState(1)
 
   const analyze = async () => {
-    if (!text.trim()) return
+    if (!situation.trim()) return
     setLoading(true)
     try {
-      const res = await axios.post(`${API}/analyze/text`, { user_id: userId, text })
+      const res = await axios.post(`${API}/analyze/text`, { user_id: userId, situation, response })
       setResult(res.data)
     } catch (e) { alert("Error: " + e.message) }
     setLoading(false)
@@ -78,9 +78,16 @@ export default function App() {
         {tab === "analyze" && (
           <div>
             <textarea
-              value={text} onChange={e => setText(e.target.value)}
-              placeholder="Describe a situation or paste something you said/wrote..."
-              style={{ width: "100%", height: "140px", background: "#111", border: "1px solid #333", color: "#e0e0e0", padding: "16px", borderRadius: "6px", fontSize: "15px", resize: "vertical", outline: "none", boxSizing: "border-box" }}
+              value={situation}
+              onChange={e => setSituation(e.target.value)}
+              placeholder="What happened? Describe the situation..."
+              style={{ width: "100%", height: "100px", background: "#111", border: "1px solid #333", color: "#e0e0e0", padding: "16px", borderRadius: "6px", fontSize: "15px", resize: "vertical", outline: "none", boxSizing: "border-box", marginBottom: "12px" }}
+            />
+            <textarea
+              value={response}
+              onChange={e => setResponse(e.target.value)}
+              placeholder="What did you say or do? Leave empty if you stayed silent..."
+              style={{ width: "100%", height: "100px", background: "#111", border: "1px solid #333", color: "#e0e0e0", padding: "16px", borderRadius: "6px", fontSize: "15px", resize: "vertical", outline: "none", boxSizing: "border-box" }}
             />
             <button onClick={analyze} disabled={loading} style={{ marginTop: "12px", padding: "12px 32px", background: "#c9a84c", color: "#000", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "15px", fontWeight: "bold", opacity: loading ? 0.6 : 1 }}>
               {loading ? "Analyzing..." : "Analyze"}

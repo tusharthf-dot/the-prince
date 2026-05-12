@@ -10,16 +10,16 @@ load_dotenv()
 
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-def analyze_text(text: str) -> dict:
-    clarity = min(textstat.flesch_reading_ease(text) / 10, 10)
+def analyze_text(situation: str, response: str) -> dict:
+    clarity = min(textstat.flesch_reading_ease(response) / 10, 10)
     clarity = max(clarity, 0)
 
-    sentence_count = textstat.sentence_count(text)
-    word_count = textstat.lexicon_count(text)
+    sentence_count = textstat.sentence_count(response)
+    word_count = textstat.lexicon_count(response)
     avg_words = word_count / max(sentence_count, 1)
     structure = 10 if 10 <= avg_words <= 20 else max(0, 10 - abs(avg_words - 15) * 0.3)
 
-    principles = retrieve_principles(text, k=2)
+    principles = retrieve_principles(situation, k=2)
     principles_text = "\n".join(principles)
 
     response = client.chat.completions.create(
@@ -40,7 +40,7 @@ def analyze_text(text: str) -> dict:
             },
             {
                 "role": "user",
-                "content": f"Text to analyze: {text}\n\nRelevant Machiavelli principles:\n{principles_text}"
+                "content": f"Situation: {situation}\n\nWhat they said/did: {response}\n\nRelevant Machiavelli principles:\n{principles_text}"
             }
         ]
     )

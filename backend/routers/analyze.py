@@ -10,16 +10,17 @@ router = APIRouter()
 
 class TextInput(BaseModel):
     user_id: str
-    text: str
+    situation: str
+    response: str = ""
 
 @router.post("/analyze/text")
 def analyze_text_input(input: TextInput, db: Session = Depends(get_db)):
-    scores = analyze_text(input.text)
+    scores = analyze_text(input.situation, input.response)
 
     session = SessionModel(
         user_id=input.user_id,
         input_type="text",
-        raw_input=input.text,
+        raw_input=input.response,
         clarity_score=scores["clarity_score"],
         confidence_score=scores["confidence_score"],
         persuasiveness_score=scores["persuasiveness_score"],
